@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 EZSynchro - Automated Synchro Report Generator
 A sleek CLI tool for streamlined traffic simulation automation
@@ -39,9 +38,7 @@ def print_banner():
 ║  {Colors.BOLD}███████╗███████╗███████║   ██║   ██║ ╚████║╚██████╗██║  ██║██║  ██║╚██████╔╝{Colors.ENDC}{Colors.OKCYAN} ║
 ║  {Colors.BOLD}╚══════╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═══╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝{Colors.ENDC}{Colors.OKCYAN}  ║
 ║                                                                               ║
-║                    {Colors.BOLD}Automated Traffic Simulation Processor{Colors.ENDC}{Colors.OKCYAN}                     ║
-║                              {Colors.BOLD}🏁 PLAID MODE 🏁{Colors.ENDC}{Colors.OKCYAN}                              ║
-║                           {Colors.BOLD}"They've gone to PLAID!"{Colors.ENDC}{Colors.OKCYAN}                          ║
+║                        {Colors.BOLD}Automated Report Printer{Colors.ENDC}{Colors.OKCYAN}                               ║
 ║                                                                               ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
 """
@@ -106,7 +103,7 @@ def validate_folder_path(path: str) -> bool:
     return Path(path).exists() and Path(path).is_dir()
 
 def get_user_inputs() -> tuple[str, int, bool, bool]:
-    """Get and validate user inputs with epic styling"""
+    """Get and validate user inputs """
     print(f"\n{Colors.BOLD}{Colors.OKCYAN}╔══════════════════════════════════════════════════════════╗")
     print(f"║                    CONFIGURATION                         ║")
     print(f"╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
@@ -122,7 +119,7 @@ def get_user_inputs() -> tuple[str, int, bool, bool]:
     
     if not validate_folder_path(folder_path):
         print(f"  {Colors.WARNING}⚠ Warning:{Colors.ENDC} Path '{folder_path}' may not exist")
-        confirm = input(f"  → Continue anyway? [{Colors.OKGREEN}y{Colors.ENDC}/{Colors.FAIL}N{Colors.ENDC}]: ").lower()
+        confirm = input(f"  → Continue anyway? [{Colors.OKGREEN}y{Colors.ENDC}/{Colors.FAIL}n{Colors.ENDC}]: ").lower()
         if confirm != 'y':
             print(f"\n{Colors.FAIL}╔══════════════════════════════════════╗")
             print(f"║  {Colors.BOLD}✗ OPERATION CANCELLED{Colors.ENDC}{Colors.FAIL}               ║")
@@ -152,180 +149,169 @@ def get_user_inputs() -> tuple[str, int, bool, bool]:
     
     print(f"  {Colors.OKGREEN}✓ Will process {num_scenarios} scenario(s){Colors.ENDC}")
 
-    # Add PDF export option
+    # PDF export option
     print(f"\n{Colors.BOLD}Export Format:{Colors.ENDC}")
-    pdf_input = input(f"  → Export as PDF? [{Colors.OKGREEN}y{Colors.ENDC}/{Colors.FAIL}N{Colors.ENDC}]: ").lower()
-    export_pdf = pdf_input == 'y'
+    txt_input = input(f"  → Export as .txt? [{Colors.OKGREEN}y{Colors.ENDC}/{Colors.FAIL}n{Colors.ENDC}]: ").lower()
+    export_pdf = txt_input == 'n'
 
     if export_pdf:
         print(f"  {Colors.OKGREEN}✓ PDF export enabled{Colors.ENDC}")
     else:
-        print(f"  {Colors.OKGREEN}✓ TXT export{Colors.ENDC}")
+        print(f"  {Colors.OKGREEN}✓ .txt export{Colors.ENDC}")
     
     # Ask about opening folder
     print(f"\n{Colors.BOLD}Options:{Colors.ENDC}")
-    open_folder_input = input(f"  → Open output folder when complete? [{Colors.OKGREEN}Y{Colors.ENDC}/{Colors.FAIL}n{Colors.ENDC}]: ").lower()
+    open_folder_input = input(f"  → Open output folder when complete? [{Colors.OKGREEN}y{Colors.ENDC}/{Colors.FAIL}n{Colors.ENDC}]: ").lower()
     open_folder_after = open_folder_input != 'n'
     
     return folder_path, num_scenarios, open_folder_after, export_pdf
 
-def plaid_key_burst(keys: list):
-    """PLAID MODE: Instantaneous key bursts with zero delays"""
+def key_burst(keys: list):
+    """Key bursts with zero delays"""
     for key in keys:
         if isinstance(key, tuple):  # For hotkeys
             pyautogui.hotkey(*key)
         else:
             pyautogui.press(key)
-        # NO DELAYS - MAXIMUM PLAID SPEED!
 
 def automate_synchro_process(folder_path: str, num_scenarios: int, export_pdf: bool = False):
-    """PLAID MODE automation - absolute theoretical maximum speed"""
-    # PLAID MODE: Zero pause between operations
-    pyautogui.PAUSE = 0.005  # Pushed beyond the limit - theoretical minimum
+    """Synchro report processing automation"""
+    pyautogui.PAUSE = 0.005  
     pyautogui.FAILSAFE = True
 
     tab_count = 10 if export_pdf else 6
     final_sleep = 20 if export_pdf else 0.4
     extra_sleep = 1 if export_pdf else 0
-    
-    
-    print(f"\n{Colors.BOLD}{Colors.OKCYAN}╔══════════════════════════════════════════════════════════╗")
-    print(f"║                 🏁 PLAID MODE ENGAGED 🏁                 ║")
-    print(f"║               THEY'VE GONE TO PLAID!                     ║")
-    print(f"║           THEORETICAL MAXIMUM SPEED ACHIEVED             ║")
-    print(f"╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
+
     print(f"{Colors.WARNING}⚠ Failsafe enabled - move mouse to corner to emergency stop{Colors.ENDC}")
     
     try:
         for scenario in range(1, num_scenarios + 1):
             start_time = time.time()
-            print(f"\n{Colors.BOLD}{Colors.HEADER}┌─ PLAID Processing Scenario {scenario}/{num_scenarios} ─┐{Colors.ENDC}")
+            print(f"\n{Colors.BOLD}{Colors.HEADER}┌─ Processing Scenario {scenario}/{num_scenarios} ─┐{Colors.ENDC}")
             
             step = 1
             total_steps = 8 if scenario == 1 else 9
             
             # Scenario selection for subsequent scenarios
             if scenario > 1:
-                print_status(step, "Lightning scenario selection...", "info")
+                print_status(step, "Selecting scenario...", "info")
                 pyautogui.click(-300, 110)
-                time.sleep(0.05)  # Theoretical minimum for UI response
+                time.sleep(0.05)
                 print_progress_bar(step, total_steps)
                 step += 1
                 
                 scenario_y = 160 + (25 * (scenario - 2))
-                print_status(step, f"Instant scenario {scenario} lock...", "info")
+                print_status(step, f"Selecting scenario {scenario}...", "info")
                 pyautogui.click(-300, scenario_y)
-                time.sleep(0.05)  # Theoretical minimum
+                time.sleep(0.05)  
                 print_progress_bar(step, total_steps)
                 step += 1
             
             # Main automation sequence
-            print_status(step, "Quantum Synchro targeting...", "info")
+            print_status(step, "Clicking Synchro interface...", "info")
             pyautogui.click(-1200, 700)
-            time.sleep(0.05)  # Theoretical minimum
+            time.sleep(0.05)  
             print_progress_bar(step, total_steps)
             step += 1
             
-            print_status(step, "Ctrl+R warp speed...", "info")
+            print_status(step, "Opening create report menu...", "info")
             pyautogui.hotkey('ctrl', 'r')
-            time.sleep(0.05)  # Theoretical minimum
+            time.sleep(0.05)  
             print_progress_bar(step, total_steps)
             step += 1
             
-            print_status(step, "Instantaneous tab burst...", "info")
-            plaid_key_burst(['tab'] * tab_count)  # ZERO delay key burst
+            print_status(step, "Navigating report interface...", "info")
+            key_burst(['tab'] * tab_count) 
             print_progress_bar(step, total_steps)
             step += 1
             
-            print_status(step, "Dialog materialization...", "info")
+            print_status(step, "Opening export dialog...", "info")
             pyautogui.press('enter')
-            time.sleep(0.8+extra_sleep)  # Reduced but kept reasonable for dialog loading
+            time.sleep(0.8+extra_sleep)
             print_progress_bar(step, total_steps)
             step += 1
             
             # File handling
             if scenario == 1:
-                print_status(step, "Directory quantum jump...", "info")
+                print_status(step, "Setting output directory...", "info")
                 pyautogui.hotkey('ctrl', 'l')
-                time.sleep(0.02)  # Near-zero
+                time.sleep(0.02)  
                 pyautogui.write(folder_path)
                 pyautogui.press('enter')
-                time.sleep(0.4)  # Optimized directory navigation
+                time.sleep(0.4)  
                 print_progress_bar(step, total_steps)
                 step += 1
                 
-                print_status(step, "File system wormhole...", "info")
-                plaid_key_burst(['tab'] * 4)
-                plaid_key_burst(['down', 'up'])
+                print_status(step, "Navigating directory...", "info")
+                key_burst(['f6'] * 3)
+                key_burst(['down', 'up'])
                 print_progress_bar(step, total_steps)
                 step += 1
                 
             else:
-                print_status(step, f"File {scenario} teleportation...", "info")
+                print_status(step, f"Selecting file {scenario}...", "info")
                 pyautogui.hotkey('alt', 'd')
-                time.sleep(0.02)  # Near-zero
+                time.sleep(0.02)  
                 
-                plaid_key_burst(['tab'] * 5)
-                plaid_key_burst(['down'] * (scenario - 1))
+                key_burst(['f6'] * 3)
+                key_burst(['down'] * (scenario - 1))
                 print_progress_bar(step, total_steps)
                 step += 1
             
-            print_status(step, f"{'PDF rendering' if export_pdf else 'Reality'} finalization...", "info")
+            print_status(step, f"{'Processing PDF export' if export_pdf else 'Processing .txt export'}...", "info")
             pyautogui.press('enter')
             time.sleep(0.15)
             if export_pdf:
-                time.sleep(0.15)  # Aggressive but stable
-                plaid_key_burst(['left'])
-                time.sleep(0.15)  # Aggressive but stable
+                time.sleep(0.15)  
+                key_burst(['left'])
+                time.sleep(0.15)  
             pyautogui.press('enter')
-            time.sleep(final_sleep)   # Optimized save time
+            time.sleep(final_sleep)   
             print_progress_bar(step, total_steps)
             
             elapsed = time.time() - start_time
-            print(f"\n{Colors.OKGREEN}└─ PLAID Scenario {scenario} completed in {elapsed:.2f}s ─┘{Colors.ENDC}")
+            print(f"\n{Colors.OKGREEN}└─ Scenario {scenario} completed in {elapsed:.2f}s ─┘{Colors.ENDC}")
         
         return True  # Success
         
     except pyautogui.FailSafeException:
         print(f"\n{Colors.WARNING}╔══════════════════════════════════════════════════════════╗")
-        print(f"║  {Colors.BOLD}⚠ PLAID MODE CANCELLED BY FAILSAFE{Colors.ENDC}{Colors.WARNING}                   ║")
-        print(f"║    Emergency brake applied at light speed!              ║")
+        print(f"║  {Colors.BOLD}⚠ AUTOMATION STOPPED BY FAILSAFE{Colors.ENDC}{Colors.WARNING}                   ║")
         print(f"╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
         return False
     except KeyboardInterrupt:
         print(f"\n{Colors.WARNING}╔══════════════════════════════════════════════════════════╗")
-        print(f"║  {Colors.BOLD}⚠ PLAID MODE CANCELLED BY USER{Colors.ENDC}{Colors.WARNING}                      ║")
-        print(f"║    User applied emergency brake (Ctrl+C)                ║")
+        print(f"║  {Colors.BOLD}⚠ AUTOMATION CANCELLED BY USER{Colors.ENDC}{Colors.WARNING}                      ║")
+        print(f"║    User stopped process (Ctrl+C)                ║")
         print(f"╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
         return False
     except Exception as e:
         print(f"\n{Colors.FAIL}╔══════════════════════════════════════════════════════════╗")
-        print(f"║  {Colors.BOLD}✗ PLAID MODE MALFUNCTION{Colors.ENDC}{Colors.FAIL}                               ║")
+        print(f"║  {Colors.BOLD}✗ AUTOMATION ERROR{Colors.ENDC}{Colors.FAIL}                               ║")
         print(f"║    Error: {str(e)[:45]:<45} ║")
         print(f"╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
         return False
 
 def main():
-    """Main CLI interface with PLAID styling"""
+    """Main CLI interface"""
     parser = argparse.ArgumentParser(
-        description="EZSynchro - Automated Synchro Report Generator (PLAID MODE)",
+        description="EZSynchro - Automated Synchro Report Generator",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 {Colors.OKCYAN}Examples:
   ezsynchro                                    # Interactive mode
   ezsynchro --path ./reports --count 5        # Direct execution
   ezsynchro --path ./reports --count 5 --open # Open folder when done
-  ezsynchro --plaid                           # MAXIMUM THEORETICAL SPEED
-  ezsynchro --pdf                             # Prints as .pdf
+  ezsynchro --peed                           # High speed mode
+  ezsynchro --pdf                             # Expor as .pdf
   
 Safety Features:
   • Move mouse to any corner to emergency stop
   • Press Ctrl+C to interrupt at any time
   • Automatic failsafe protection enabled
   
-🏁 PLAID MODE: Beyond ludicrous speed - theoretical maximum achieved!
-   "They've gone to plaid!" - Spaceballs
-   WARNING: This mode operates at the theoretical limits of automation!{Colors.ENDC}
+{Colors.ENDC}
         """
     )
     
@@ -349,9 +335,9 @@ Safety Features:
     )
     
     parser.add_argument(
-        "--plaid", "-pl",
+        "--speed", "-sp",
         action="store_true",
-        help="Enable PLAID mode (theoretical maximum speed)"
+        help="Enable high-speed mode"
     )
     
     parser.add_argument(
@@ -368,10 +354,9 @@ Safety Features:
     
     args = parser.parse_args()
     
-    # Apply PLAID mode settings
-    if args.plaid:
-        print(f"{Colors.WARNING}🏁 PLAID MODE ENABLED - THEY'VE GONE TO PLAID!{Colors.ENDC}")
-        print(f"{Colors.WARNING}   Operating at theoretical maximum speed!{Colors.ENDC}")
+    # Apply high speed mode
+    if args.speed:
+        print(f"{Colors.WARNING}🚀 HIGH SPEED MODE ENABLED{Colors.ENDC}")
     
     try:
         if not args.no_banner:
@@ -395,51 +380,46 @@ Safety Features:
             print(f"  Path: {Colors.OKCYAN}{folder_path}{Colors.ENDC}")
             print(f"  Scenarios: {Colors.OKCYAN}{num_scenarios}{Colors.ENDC}")
             print(f"  Open folder: {Colors.OKCYAN}{'Yes' if open_folder_after else 'No'}{Colors.ENDC}")
-            if args.plaid:
-                print(f"  Mode: {Colors.WARNING}🏁 PLAID SPEED 🏁{Colors.ENDC}")
+            if args.speed:
+                print(f"  Mode: {Colors.WARNING}🚀 HIGH SPEED 🚀{Colors.ENDC}")
         else:
             folder_path, num_scenarios, open_folder_after, export_pdf = get_user_inputs()
         
-        print(f"\n{Colors.BOLD}Ready to engage PLAID drive.{Colors.ENDC}")
+        print(f"\n{Colors.BOLD}Ready to start automation.{Colors.ENDC}")
         print(f"{Colors.WARNING}Ensure Synchro application is visible and accessible.{Colors.ENDC}")
         
         try:
-            input(f"\n{Colors.BOLD}Press ENTER to go PLAID or Ctrl+C to cancel...{Colors.ENDC}")
-            # No countdown - INSTANT PLAID!
-            print(f"{Colors.OKGREEN}🏁 ENGAGING PLAID DRIVE NOW! 🏁{Colors.ENDC}")
+            input(f"\n{Colors.BOLD}Press ENTER to begin or Ctrl+C to cancel...{Colors.ENDC}")
+            print(f"{Colors.OKGREEN}🚀 Starting automation process... 🚀{Colors.ENDC}")
             
             start_total = time.time()
             success = automate_synchro_process(folder_path, num_scenarios, export_pdf)
             total_elapsed = time.time() - start_total
             
             if success:
-                # PLAID success message
-                scenarios_per_second = num_scenarios / total_elapsed
+                #  success message
+                #scenarios_per_second = num_scenarios / total_elapsed
                 print(f"\n{Colors.OKGREEN}╔════════════════════════════════════════════════════════════╗")
-                print(f"║  {Colors.BOLD}🏁 PLAID MISSION ACCOMPLISHED - MAXIMUM WARP 🏁{Colors.ENDC}{Colors.OKGREEN}           ║")
-                print(f"║    Generated {num_scenarios} report(s) in {total_elapsed:.1f} seconds                     ║")
-                print(f"║    Average: {total_elapsed/num_scenarios:.1f}s per scenario                            ║")
-                print(f"║    PLAID Speed: {scenarios_per_second:.1f} scenarios/second                      ║")
-                if total_elapsed/num_scenarios < 2.0:
-                    print(f"║    🏆 SUB-2-SECOND ACHIEVEMENT UNLOCKED! 🏆              ║")
+                print(f"║  {Colors.BOLD}🚀 AUTOMATION COMPLETED SUCCESSFULLY 🚀{Colors.ENDC}{Colors.OKGREEN}                ║")
+                print(f"║    Generated {num_scenarios} report(s) in {total_elapsed:.1f} seconds                    ║")
                 print(f"║    Output: {folder_path[:35]:<35}             ║")
                 print(f"╚════════════════════════════════════════════════════════════╝{Colors.ENDC}")
                 
                 # Open folder if requested
                 if open_folder_after:
-                    print(f"\n{Colors.OKBLUE}Opening output folder at light speed...{Colors.ENDC}")
+                    print(f"\n{Colors.OKBLUE}Opening output folder...{Colors.ENDC}")
                     if open_folder(folder_path):
                         print(f"{Colors.OKGREEN}✓ Folder opened successfully{Colors.ENDC}")
                     
         except KeyboardInterrupt:
             print(f"\n{Colors.FAIL}╔══════════════════════════════════════╗")
-            print(f"║  {Colors.BOLD}✗ PLAID CANCELLED{Colors.ENDC}{Colors.FAIL}                     ║")
-            print(f"║    User aborted PLAID sequence       ║")
+            print(f"║  {Colors.BOLD}✗ AUTOMATION CANCELLED{Colors.ENDC}{Colors.FAIL}                     ║")
+            print(f"║    User aborted process       ║")
             print(f"╚══════════════════════════════════════╝{Colors.ENDC}")
             sys.exit(0)
         
     except KeyboardInterrupt:
-        print(f"\n{Colors.WARNING}PLAID disengaged! 🏁{Colors.ENDC}")
+        print(f"\n{Colors.WARNING}Automation Cancelled! 🚀{Colors.ENDC}")
         sys.exit(0)
 
 if __name__ == "__main__":
