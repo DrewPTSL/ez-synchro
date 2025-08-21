@@ -105,14 +105,14 @@ def validate_folder_path(path: str) -> bool:
     """Validate if the folder path exists"""
     return Path(path).exists() and Path(path).is_dir()
 
-def get_user_inputs() -> tuple[str, int, bool]:
+def get_user_inputs() -> tuple[str, int, bool, bool]:
     """Get and validate user inputs with epic styling"""
     print(f"\n{Colors.BOLD}{Colors.OKCYAN}╔══════════════════════════════════════════════════════════╗")
     print(f"║                    CONFIGURATION                         ║")
     print(f"╚══════════════════════════════════════════════════════════╝{Colors.ENDC}")
     
     # Get folder path
-    default_path = r"C:"
+    default_path = r"C:\Users\DrewCobean\OneDrive - Paradigm\Desktop\Synchro"
     
     print(f"\n{Colors.BOLD}Output Directory:{Colors.ENDC}")
     print(f"  Default: {Colors.OKCYAN}{default_path}{Colors.ENDC}")
@@ -141,18 +141,33 @@ def get_user_inputs() -> tuple[str, int, bool]:
             if num_scenarios <= 0:
                 print(f"  {Colors.FAIL}✗ Number must be positive!{Colors.ENDC}")
                 continue
+            elif num_scenarios > 16:
+                print(f"  {Colors.FAIL}✗ Can only handle up to 16 scenarios!{Colors.ENDC}")
+                continue
             break
+            
+        
         except ValueError:
             print(f"  {Colors.FAIL}✗ Please enter a valid number{Colors.ENDC}")
     
     print(f"  {Colors.OKGREEN}✓ Will process {num_scenarios} scenario(s){Colors.ENDC}")
+
+    # Add PDF export option
+    print(f"\n{Colors.BOLD}Export Format:{Colors.ENDC}")
+    pdf_input = input(f"  → Export as PDF? [{Colors.OKGREEN}y{Colors.ENDC}/{Colors.FAIL}N{Colors.ENDC}]: ").lower()
+    export_pdf = pdf_input == 'y'
+
+    if export_pdf:
+        print(f"  {Colors.OKGREEN}✓ PDF export enabled{Colors.ENDC}")
+    else:
+        print(f"  {Colors.OKGREEN}✓ TXT export{Colors.ENDC}")
     
     # Ask about opening folder
     print(f"\n{Colors.BOLD}Options:{Colors.ENDC}")
     open_folder_input = input(f"  → Open output folder when complete? [{Colors.OKGREEN}Y{Colors.ENDC}/{Colors.FAIL}n{Colors.ENDC}]: ").lower()
     open_folder_after = open_folder_input != 'n'
     
-    return folder_path, num_scenarios, open_folder_after
+    return folder_path, num_scenarios, open_folder_after, export_pdf
 
 def plaid_key_burst(keys: list):
     """PLAID MODE: Instantaneous key bursts with zero delays"""
@@ -163,11 +178,16 @@ def plaid_key_burst(keys: list):
             pyautogui.press(key)
         # NO DELAYS - MAXIMUM PLAID SPEED!
 
-def automate_synchro_process(folder_path: str, num_scenarios: int):
+def automate_synchro_process(folder_path: str, num_scenarios: int, export_pdf: bool = False):
     """PLAID MODE automation - absolute theoretical maximum speed"""
     # PLAID MODE: Zero pause between operations
     pyautogui.PAUSE = 0.005  # Pushed beyond the limit - theoretical minimum
     pyautogui.FAILSAFE = True
+
+    tab_count = 10 if export_pdf else 6
+    final_sleep = 20 if export_pdf else 0.4
+    extra_sleep = 1 if export_pdf else 0
+    
     
     print(f"\n{Colors.BOLD}{Colors.OKCYAN}╔══════════════════════════════════════════════════════════╗")
     print(f"║                 🏁 PLAID MODE ENGAGED 🏁                 ║")
@@ -213,13 +233,13 @@ def automate_synchro_process(folder_path: str, num_scenarios: int):
             step += 1
             
             print_status(step, "Instantaneous tab burst...", "info")
-            plaid_key_burst(['tab'] * 6)  # ZERO delay key burst
+            plaid_key_burst(['tab'] * tab_count)  # ZERO delay key burst
             print_progress_bar(step, total_steps)
             step += 1
             
             print_status(step, "Dialog materialization...", "info")
             pyautogui.press('enter')
-            time.sleep(0.8)  # Reduced but kept reasonable for dialog loading
+            time.sleep(0.8+extra_sleep)  # Reduced but kept reasonable for dialog loading
             print_progress_bar(step, total_steps)
             step += 1
             
@@ -250,11 +270,15 @@ def automate_synchro_process(folder_path: str, num_scenarios: int):
                 print_progress_bar(step, total_steps)
                 step += 1
             
-            print_status(step, "Reality finalization...", "info")
+            print_status(step, f"{'PDF rendering' if export_pdf else 'Reality'} finalization...", "info")
             pyautogui.press('enter')
-            time.sleep(0.15)  # Aggressive but stable
+            time.sleep(0.15)
+            if export_pdf:
+                time.sleep(0.15)  # Aggressive but stable
+                plaid_key_burst(['left'])
+                time.sleep(0.15)  # Aggressive but stable
             pyautogui.press('enter')
-            time.sleep(0.4)   # Optimized save time
+            time.sleep(final_sleep)   # Optimized save time
             print_progress_bar(step, total_steps)
             
             elapsed = time.time() - start_time
@@ -292,6 +316,7 @@ def main():
   ezsynchro --path ./reports --count 5        # Direct execution
   ezsynchro --path ./reports --count 5 --open # Open folder when done
   ezsynchro --plaid                           # MAXIMUM THEORETICAL SPEED
+  ezsynchro --pdf                             # Prints as .pdf
   
 Safety Features:
   • Move mouse to any corner to emergency stop
@@ -334,6 +359,12 @@ Safety Features:
         action="store_true",
         help="Skip banner display"
     )
+
+    parser.add_argument(
+    "--pdf",
+    action="store_true",
+    help="Export as .pdf instead of .txt (longer processing time)"
+    )
     
     args = parser.parse_args()
     
@@ -351,6 +382,7 @@ Safety Features:
             folder_path = args.path
             num_scenarios = args.count
             open_folder_after = args.open
+            export_pdf = args.pdf
             
             if not validate_folder_path(folder_path):
                 print(f"\n{Colors.FAIL}╔══════════════════════════════════════╗")
@@ -366,7 +398,7 @@ Safety Features:
             if args.plaid:
                 print(f"  Mode: {Colors.WARNING}🏁 PLAID SPEED 🏁{Colors.ENDC}")
         else:
-            folder_path, num_scenarios, open_folder_after = get_user_inputs()
+            folder_path, num_scenarios, open_folder_after, export_pdf = get_user_inputs()
         
         print(f"\n{Colors.BOLD}Ready to engage PLAID drive.{Colors.ENDC}")
         print(f"{Colors.WARNING}Ensure Synchro application is visible and accessible.{Colors.ENDC}")
@@ -377,7 +409,7 @@ Safety Features:
             print(f"{Colors.OKGREEN}🏁 ENGAGING PLAID DRIVE NOW! 🏁{Colors.ENDC}")
             
             start_total = time.time()
-            success = automate_synchro_process(folder_path, num_scenarios)
+            success = automate_synchro_process(folder_path, num_scenarios, export_pdf)
             total_elapsed = time.time() - start_total
             
             if success:
